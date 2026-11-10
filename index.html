@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Family Desk</title>
+<style>
+/* Same look as the Content Review Desk (Apple-style block, 2026-11-01): grouped cards on a soft grey canvas,
+   one blue accent, status as small coloured dots. Only the Posts view: no Chats, Comments, Workflow or live watch. */
+:root{
+  --bg:#f5f5f7; --surface:#ffffff; --ink:#1d1d1f; --muted:#6e6e73; --line:rgba(60,60,67,.12);
+  --accent:#0071e3; --accent-ink:#ffffff; --tint:rgba(0,113,227,.10);
+  --input:#0071e3; --ready:#ff9500; --changes:#ff3b30; --approved:#34c759; --scheduled:#5856d6; --posted:#8e8e93; --dropped:#aeaeb2;
+  --chip-bg:rgba(118,118,128,.12); --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 20px rgba(0,0,0,.05);
+  --cpa:#0071e3; --life:#e8590c; --seg-on:#ffffff;
+  --font-body:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang TC","Helvetica Neue","Noto Sans TC",system-ui,sans-serif;
+  --font-mono:ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#000000; --surface:#1c1c1e; --ink:#f5f5f7; --muted:#98989d; --line:rgba(84,84,88,.55);
+  --accent:#2997ff; --accent-ink:#ffffff; --tint:rgba(41,151,255,.16);
+  --input:#2997ff; --ready:#ff9f0a; --changes:#ff453a; --approved:#30d158; --scheduled:#7d7aff; --posted:#98989d; --dropped:#636366;
+  --chip-bg:rgba(118,118,128,.24); --shadow:none; --cpa:#2997ff; --life:#ff8a3d; --seg-on:#636366; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#000000; --surface:#1c1c1e; --ink:#f5f5f7; --muted:#98989d; --line:rgba(84,84,88,.55);
+  --accent:#2997ff; --accent-ink:#ffffff; --tint:rgba(41,151,255,.16);
+  --input:#2997ff; --ready:#ff9f0a; --changes:#ff453a; --approved:#30d158; --scheduled:#7d7aff; --posted:#98989d; --dropped:#636366;
+  --chip-bg:rgba(118,118,128,.24); --shadow:none; --cpa:#2997ff; --life:#ff8a3d; --seg-on:#636366; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 48px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;padding-top:8px}
+h1{font-size:30px;font-weight:700;letter-spacing:-.025em;margin:0}
+.hello{color:var(--muted);font-size:14px;margin-top:2px}
+.hdr-r{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sub{color:var(--muted);font-size:13px}
+.bar{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);margin-inline:-16px;padding:12px 16px 6px;margin-top:10px;display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.row::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:0;background:var(--chip-bg);color:var(--ink);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;display:flex;gap:6px;align-items:center}
+.tab[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.tab .n{font-size:12px;font-variant-numeric:tabular-nums;opacity:.6}
+#whoTabs{background:var(--chip-bg);border-radius:10px;padding:2px;gap:2px}
+#whoTabs .tab{flex:1 1 0;justify-content:center;background:transparent;color:var(--muted);border-radius:8px;padding:7px 12px;font-size:14px;font-weight:600}
+#whoTabs .tab[aria-pressed="true"]{background:var(--seg-on);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04)}
+#brandTabs{gap:2px;background:var(--chip-bg);border-radius:999px;padding:2px}
+#brandTabs .tab{background:transparent;color:var(--muted);padding:4px 11px;font-size:12.5px}
+#brandTabs .tab[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.addbtn{font:inherit;font-size:14px;font-weight:600;border:0;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:7px 14px;cursor:pointer;text-decoration:none}
+.note{margin:12px 0 0;padding:10px 12px;border-radius:12px;background:var(--chip-bg);color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+@media (min-width:820px){.grid{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.top{display:flex;gap:12px;padding:16px 16px 0}
+.meta{min-width:0;flex:1 1 0;display:flex;flex-direction:column;gap:6px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{font-size:11.5px;font-weight:500;letter-spacing:.02em;padding:2px 8px;border-radius:999px;background:var(--chip-bg);color:var(--muted)}
+.pill.status{background:transparent;color:var(--ink);padding-left:0;display:inline-flex;align-items:center;gap:6px}
+.pill.status::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--st)}
+.pill.by{background:var(--tint);color:var(--accent)}
+.title{font-size:17px;font-weight:600;line-height:1.4;margin:0;overflow-wrap:anywhere;letter-spacing:-.015em}
+.where{font-size:13px;color:var(--ink);line-height:1.4}
+.where b{font-weight:600}
+.player{position:relative;display:block;width:calc(100% - 28px);max-width:360px;aspect-ratio:9/16;margin:12px 14px 0;border-radius:8px;background:#000;overflow:hidden;border:0;padding:0;cursor:pointer}
+.player img{width:100%;height:100%;object-fit:cover;display:block}
+.player iframe{width:100%;height:100%;border:0;display:block}
+.player .play{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:15px;font-weight:600;background:linear-gradient(transparent 55%,rgba(0,0,0,.45))}
+.player .play span{width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.5);display:grid;place-items:center;font-size:26px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.player .wait{position:absolute;inset:0;display:grid;place-items:center;color:#ddd;font-size:13px;text-align:center;padding:16px}
+.slides{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding:12px 14px 0;scrollbar-width:thin}
+.slides img{flex:0 0 78%;max-width:320px;aspect-ratio:4/5;object-fit:cover;border-radius:8px;scroll-snap-align:start;background:var(--chip-bg)}
+.threads{margin:12px 14px 0;padding:12px 14px;border-radius:12px;background:var(--bg);white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px;line-height:1.6}
+.links{display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px 0}
+.btn,button.act{font:inherit;font-size:14px;font-weight:600;line-height:1.3;border-radius:10px;padding:8px 14px;cursor:pointer;border:0;background:var(--tint);color:var(--accent);text-decoration:none;display:inline-flex;align-items:center}
+button.act.primary{background:var(--accent);color:var(--accent-ink)}
+button.act:disabled{opacity:.5;cursor:default}
+button:focus-visible,a:focus-visible,summary:focus-visible,textarea:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+details{border-top:.5px solid var(--line);margin-top:12px}
+summary{cursor:pointer;padding:10px 14px;font-size:13px;font-weight:500;color:var(--muted);list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:" ＋"}
+details[open] summary::after{content:" －"}
+.sec{padding:0 14px 12px;display:flex;flex-direction:column;gap:8px}
+.sec h3{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 0}
+.sec pre{white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--font-body);font-size:14px;margin:0;background:var(--bg);border-radius:12px;padding:10px}
+.field{font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
+textarea.field{min-height:64px;resize:vertical}
+.actions{display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px 14px;margin-top:auto}
+.actions .field{flex:1 1 180px;min-width:0;width:auto}
+.ro{font-size:13px;color:var(--muted);padding:12px 14px 14px;margin-top:auto}
+.empty-state{margin-top:24px;padding:24px;background:var(--surface);border-radius:18px;box-shadow:var(--shadow);color:var(--muted)}
+.empty-state strong{color:var(--ink)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;z-index:20;max-width:calc(100% - 32px)}
+.day{grid-column:1/-1;margin:8px 4px -4px;font-size:13px;font-weight:600;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Family Desk</h1>
+      <div class="hello" id="hello"></div>
+    </div>
+    <div class="hdr-r">
+      <div class="row" id="brandTabs" role="group" aria-label="Account"></div>
+      <a class="addbtn" id="addBtn" target="_blank" rel="noopener" hidden>＋ Add a video</a>
+    </div>
+  </header>
+  <div class="bar">
+    <div class="row" id="whoTabs" role="group" aria-label="Whose posts"></div>
+    <div class="row" id="statusTabs" role="group" aria-label="Status"></div>
+  </div>
+  <p class="note" id="note" hidden></p>
+  <div class="grid" id="grid"></div>
+  <div class="empty-state" id="empty" hidden></div>
+</div>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+// Any script error shows on the page instead of a blank desk.
+window.addEventListener('error',e=>{const n=document.getElementById('note');if(n){n.hidden=false;n.textContent='Page error: '+(e.message||e)+' (line '+(e.lineno||'?')+')'}});
+window.addEventListener('unhandledrejection',e=>{const n=document.getElementById('note');if(n){n.hidden=false;n.textContent='Page error: '+((e.reason&&e.reason.message)||e.reason)}});
+const KEY = (new URLSearchParams(location.search).get("k")||new URLSearchParams(location.hash.slice(1)).get("k")||"");
+const EXEC = "https://script.google.com/macros/s/AKfycbxrNZTZRkB-7fmQI7e-e2b0l8LFB-g9sbjs_X_0JeWGOqLvenC0OWhmPYd-0zO2Cft6EA/exec";
+let BOOT = null;
+const TABS=[
+  {id:"review",label:"To review",of:["input","ready"]},
+  {id:"fixing",label:"Being fixed",of:["changes"]},
+  {id:"approved",label:"Coming up",of:["approved","scheduled"]},
+  {id:"posted",label:"Posted",of:["posted"]},
+  {id:"dropped",label:"Dropped",of:["dropped"]}
+];
+const STATUS_LABEL={input:"To review",ready:"To review",changes:"Being fixed",approved:"Approved",scheduled:"Scheduled",posted:"Posted",dropped:"Dropped"};
+const KIND={reel:"Reel",story:"Story reel",carousel:"Carousel",threads:"Threads",post:"Post"};
+const PT="America/Los_Angeles";
+const S={me:null,people:[],items:[],rules:{},folderUrl:null,ready:false,brand:"all",who:"all",status:"review",when:{},note:{},playing:{},thumbs:{}};
+try{const s=JSON.parse(localStorage.getItem("fd-ui")||"{}");["brand","who","status"].forEach(k=>{if(s[k])S[k]=s[k]})}catch(e){}
+function saveUi(){try{localStorage.setItem("fd-ui",JSON.stringify({brand:S.brand,who:S.who,status:S.status}))}catch(e){}}
+
+const $=id=>document.getElementById(id);
+function el(tag,attrs,...kids){const n=document.createElement(tag);for(const[k,v]of Object.entries(attrs||{})){if(v==null||v===false)continue;if(k==="class")n.className=v;else if(k==="text")n.textContent=v;else if(k.startsWith("on"))n.addEventListener(k.slice(2),v);else n.setAttribute(k,v===true?"":v)}for(const c of kids.flat()){if(c==null||c===false)continue;n.append(c.nodeType?c:document.createTextNode(c))}return n}
+function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2800)}
+// fetch to the web app, not google.script.run: that one fails (401) when the browser has several Google accounts signed in.
+const OPS={getDesk:a=>({op:"desk"}),act:a=>({op:"act",id:a[1],action:a[2],value:a[3]}),thumb:a=>({op:"thumb",id:a[1]})};
+async function api(fn,...args){
+  const r=await fetch(EXEC,{method:"POST",body:JSON.stringify(Object.assign({key:KEY},OPS[fn](args)))});
+  const j=await r.json();if(j.error)throw new Error(j.error);return j.result;
+}
+function ptLabel(t){return new Date(t).toLocaleString("en-US",{timeZone:PT,weekday:"short",month:"numeric",day:"numeric",hour:"numeric",minute:"2-digit"})}
+function brandName(b){return(S.rules.brands||{})[b]||b}
+function personName(id){const p=S.people.find(x=>x.id===id);return p?p.name:(S.rules.ownerName||"Audi")}
+function isOwner(){return S.me&&S.me.role==="owner"}
+function mine(it){return S.me&&it.contributed_by===S.me.id}
+function canAct(it){return isOwner()||mine(it)}
+function tabOf(st){return TABS.find(t=>t.of.includes(st))||TABS[0]}
+function stColor(st){return `var(--${st})`}
+function safeUrl(u){return typeof u==="string"&&/^https:\/\//.test(u)?u:null}
+const PLAT={"tw-us-times":"Instagram + Facebook","twus-cpa":"Instagram + Facebook"};
+
+function visible(){return S.items.filter(it=>(S.brand==="all"||it.brand===S.brand)&&(S.who==="all"||(S.who==="mine"?mine(it):(S.who==="owner"?!it.contributed_by||it.contributed_by==="owner":it.contributed_by===S.who))))}
+
+function renderTabs(){
+  const brands=[["all","All"],...Object.entries(S.rules.brands||{})];
+  $("brandTabs").replaceChildren(...brands.map(([id,l])=>el("button",{class:"tab",type:"button","aria-pressed":String(S.brand===id),onclick:()=>{S.brand=id;saveUi();render()}},l)));
+  const who=[["all","全部"]];if(!isOwner())who.push(["mine","我的"]);
+  for(const p of S.people){if(S.me&&p.id===S.me.id&&!isOwner())continue;who.push([p.id,p.name])}
+  if(!who.some(([id])=>id===S.who))S.who="all";
+  $("whoTabs").replaceChildren(...who.map(([id,l])=>el("button",{class:"tab",type:"button","aria-pressed":String(S.who===id),onclick:()=>{S.who=id;saveUi();render()}},l)));
+  const counts={};for(const it of visible()){const t=tabOf(it.status).id;counts[t]=(counts[t]||0)+1}
+  $("statusTabs").replaceChildren(...TABS.map(t=>el("button",{class:"tab",type:"button","aria-pressed":String(S.status===t.id),onclick:()=>{S.status=t.id;saveUi();render()}},t.label,el("span",{class:"n",text:String(counts[t.id]||0)}))));
+}
+
+function whereLine(it){
+  const r=S.rules,acct=brandName(it.brand),to=PLAT[it.brand]||"Instagram";let when;
+  if(["input","ready","changes"].includes(it.status)){
+    const typed=(S.when[it.id]||"").trim();
+    when=typed?`your time 「${typed}」`:(isOwner()?"next free slot":`next free slot at least ${r.vetoHours||12} h out`);
+  }else if(["approved","scheduled"].includes(it.status)){
+    const t=Date.parse(it.post_at||"");
+    when=t?ptLabel(t):(it.post_instruction?`「${it.post_instruction}」 · ${r.ownerName}'s poster books it`:`${r.ownerName}'s poster books the next free slot`);
+  }else if(it.status==="posted")when=it.post_at?"posted "+ptLabel(Date.parse(it.post_at)):"posted";
+  else return null;
+  return el("div",{class:"where"},el("b",{text:acct}),` → ${to} · ${when}`);
+}
+
+// Cover first, tap to play: one Drive player per card would make the page slow on a phone.
+function loadThumb(id,img,wait){
+  if(S.thumbs[id]){img.src=S.thumbs[id];return}
+  api("thumb",KEY,id).then(u=>{if(u){S.thumbs[id]=u;img.src=u}else{img.remove();wait.hidden=false}}).catch(()=>{img.remove();wait.hidden=false});
+}
+function player(it){
+  if(!it.video_id)return null;
+  if(S.playing[it.id])return el("div",{class:"player"},el("iframe",{src:"https:"+"/"+"/drive.google.com/file/d/"+encodeURIComponent(it.video_id)+"/preview",allow:"autoplay; fullscreen",allowfullscreen:true,title:it.title||"Video"}));
+  const img=el("img",{alt:"Cover"}),wait=el("div",{class:"wait",hidden:true,text:"No cover yet: Drive is still processing this video. Tap to try playing."});
+  loadThumb(it.cover_id||it.video_id,img,wait);
+  return el("button",{class:"player",type:"button","aria-label":"Play "+(it.title||"video"),onclick:()=>{S.playing[it.id]=true;render()}},img,wait,el("div",{class:"play"},el("span",{text:"▶"})));
+}
+function slides(it){
+  if(!it.image_ids||!it.image_ids.length)return null;
+  const box=el("div",{class:"slides"});
+  it.image_ids.forEach((id,i)=>{const img=el("img",{alt:`Slide ${i+1}`});box.append(img);const w=el("span");loadThumb(id,img,w)});
+  return box;
+}
+
+function card(it){
+  const shown=it.status,acts=[],tid=`w-${it.id}`;
+  const byLabel=it.contributed_by&&it.contributed_by!=="owner"?(mine(it)?"我的":personName(it.contributed_by)):null;
+  if(canAct(it)){
+    const waiting=["input","ready","changes"].includes(it.status);
+    if(waiting){
+      const blocked=!isOwner()&&!(S.rules.familyApproveBrands||[]).includes(it.brand);
+      acts.push(el("input",{id:tid,class:"field",type:"text",enterkeyhint:"done",autocomplete:"off",placeholder:"When? 空白 = next free slot · 週六晚上",value:S.when[it.id]||"",oninput:e=>{S.when[it.id]=e.target.value}}));
+      acts.push(el("button",{class:"act primary",type:"button",disabled:blocked,title:blocked?`${brandName(it.brand)} posts need ${S.rules.ownerName}'s Approve`:null,onpointerdown:e=>e.preventDefault(),onclick:e=>doAct(it,"approve",(S.when[it.id]||"").trim(),e.currentTarget)},"Approve"));
+      acts.push(el("button",{class:"act",type:"button",onclick:e=>doAct(it,"drop","",e.currentTarget)},"Drop"));
+      if(blocked)acts.push(el("div",{class:"sub",style:"flex:1 1 100%",text:`${brandName(it.brand)} posts need ${S.rules.ownerName}'s Approve. Switch the account below or wait for ${S.rules.ownerName}.`}));
+    }else if(["approved","scheduled"].includes(it.status))acts.push(el("button",{class:"act",type:"button",onclick:e=>doAct(it,"undo","",e.currentTarget)},"Undo approval"));
+    else if(it.status==="dropped")acts.push(el("button",{class:"act",type:"button",onclick:e=>doAct(it,"restore","",e.currentTarget)},"Restore"));
+  }
+  const editable=canAct(it)&&["input","ready","changes"].includes(it.status);
+  const noteId=`n-${it.id}`,titleId=`t-${it.id}`;
+  return el("article",{class:"card",style:`--st:${stColor(shown)}`},
+    el("div",{class:"top"},el("div",{class:"meta"},
+      el("div",{class:"pills"},el("span",{class:"pill status",text:STATUS_LABEL[shown]||shown}),el("span",{class:"pill",text:brandName(it.brand)}),it.kind?el("span",{class:"pill",text:KIND[it.kind]||it.kind}):null,byLabel?el("span",{class:"pill by",text:byLabel}):null),
+      el("h2",{class:"title",text:it.title||it.file_name||"Untitled"}),
+      whereLine(it),
+      it.summary?el("div",{class:"sub",text:it.summary}):null,
+      it.note?el("div",{class:"sub",style:"color:var(--ink)",text:"📝 "+it.note}):null)),
+    player(it),
+    it.kind==="carousel"?slides(it):null,
+    ["threads","post"].includes(it.kind)&&it.threads_text?el("div",{class:"threads",text:it.threads_text}):null,
+    safeUrl(it.posted_url)?el("div",{class:"links"},el("a",{class:"btn",href:it.posted_url,target:"_blank",rel:"noopener"},"Live post")):null,
+    it.caption||editable?el("details",{},el("summary",{},editable?"Title, note, account, caption":"Caption"),
+      el("div",{class:"sec"},
+        it.caption&&!editable?[el("h3",{text:"Caption"}),el("pre",{text:it.caption})]:null,
+        editable?[
+          el("h3",{text:"Title"}),el("div",{class:"row",style:"overflow:visible"},el("input",{id:titleId,class:"field",type:"text",value:it.title||""}),el("button",{class:"act",type:"button",onclick:e=>doAct(it,"title",$(titleId).value,e.currentTarget)},"Save")),
+          el("h3",{text:`Note for ${S.rules.ownerName}`}),el("textarea",{id:noteId,class:"field",placeholder:"例如：想用在台美生活、背景音樂換掉",text:it.note||""}),
+          el("div",{},el("button",{class:"act",type:"button",onclick:e=>doAct(it,"note",$(noteId).value,e.currentTarget)},"Save note")),
+          el("h3",{text:"Caption"}),el("textarea",{id:`c-${it.id}`,class:"field",placeholder:"貼文文字（空白 = 用標題）",text:it.caption||""}),
+          el("div",{},el("button",{class:"act",type:"button",onclick:e=>doAct(it,"caption",$(`c-${it.id}`).value,e.currentTarget)},"Save caption")),
+          el("h3",{text:"Account"}),el("div",{class:"row",style:"overflow:visible"},...Object.entries(S.rules.brands||{}).map(([id,l])=>el("button",{class:"tab",type:"button","aria-pressed":String(it.brand===id),onclick:e=>{if(it.brand!==id)doAct(it,"brand",id,e.currentTarget)}},l)))
+        ]:null)):null,
+    acts.length?el("div",{class:"actions"},acts):el("div",{class:"ro",text:it.status==="posted"?"":`Only ${personName(it.contributed_by)}${it.contributed_by&&it.contributed_by!=="owner"?` or ${S.rules.ownerName}`:""} can change this one.`}));
+}
+
+async function doAct(it,action,value,btn){
+  const label=btn?btn.textContent:"";
+  if(btn){btn.disabled=true;btn.textContent="Saving…"}
+  try{
+    const fresh=await api("act",KEY,it.id,action,value);
+    S.items=S.items.map(x=>x.id===it.id?fresh:x);
+    if(action==="approve"){delete S.when[it.id];toast(value?`Approved: 「${value}」`:"Approved: the next free slot")}
+    else toast({drop:"Dropped",undo:"Approval undone",restore:"Back in To review",note:"Note saved",brand:"Account changed",title:"Title saved"}[action]||"Saved");
+    render();
+  }catch(e){if(btn){btn.disabled=false;btn.textContent=label}toast(e.message||"Couldn't save. Try again.")}
+}
+
+// Keep a card's DOM while its data is unchanged, so the 1-minute refresh never restarts a playing video.
+const cardCache=new Map();
+function cached(it){
+  const sig=JSON.stringify([it,!!S.playing[it.id],S.me&&S.me.id,S.rules,S.people]);
+  const hit=cardCache.get(it.id);if(hit&&hit.sig===sig)return hit.node;
+  const node=card(it);cardCache.set(it.id,{sig,node});return node;
+}
+function render(){
+  if(document.activeElement&&document.activeElement.classList&&document.activeElement.classList.contains("field")){render.pending=true;return}
+  render.pending=false;
+  if(!S.me)return;
+  renderTabs();
+  const tab=TABS.find(t=>t.id===S.status)||TABS[0];
+  let list=visible().filter(it=>tab.of.includes(it.status));
+  const kids=[];
+  if(tab.id==="approved"){
+    list.sort((a,b)=>(Date.parse(a.post_at||"")||9e15)-(Date.parse(b.post_at||"")||9e15));
+    let day=null;
+    for(const it of list){const t=Date.parse(it.post_at||"");const d=t?new Date(t).toLocaleDateString("en-US",{timeZone:PT,weekday:"long",month:"short",day:"numeric"}):"Time being set";
+      if(d!==day){kids.push(el("div",{class:"day",text:d}));day=d}kids.push(cached(it))}
+  }else{
+    list.sort((a,b)=>String(b.updated_at||b.created_at||"").localeCompare(String(a.updated_at||a.created_at||"")));
+    list.forEach(it=>kids.push(cached(it)));
+  }
+  const g=$("grid"),cur=[...g.children];
+  if(!(cur.length===kids.length&&cur.every((n,i)=>n===kids[i])))g.replaceChildren(...kids);
+  const empty=$("empty");empty.hidden=!!list.length;
+  if(!list.length)empty.replaceChildren(el("strong",{text:`Nothing in ${tab.label.toLowerCase()}.`}),S.folderUrl&&tab.id==="review"?" Tap ＋ Add a video, upload it to your folder, and it shows up here within about 10 minutes.":" ");
+}
+document.addEventListener("focusout",()=>setTimeout(()=>{if(render.pending)render()},300));
+
+async function load(first){
+  try{
+    let d;if(first&&BOOT){d=BOOT;BOOT=null;if(d.error)throw new Error(d.error)}else d=await api("getDesk",KEY);
+    Object.assign(S,{me:d.me,people:d.people,items:d.items,rules:d.rules,folderUrl:d.folderUrl,ready:true});
+    $("hello").textContent=`${d.me.name} · ${d.me.role==="owner"?"you can change every card":"you can change your own cards"}`;
+    const a=$("addBtn");if(d.folderUrl){a.href=d.folderUrl;a.hidden=false}
+    $("note").hidden=true;render();
+  }catch(e){
+    $("note").hidden=false;$("note").textContent=first?(e.message||"Couldn't load the desk."):"Couldn't refresh. Showing what was loaded.";
+  }
+}
+$("empty").hidden=false;$("empty").textContent="Loading…";
+load(true);
+setInterval(()=>{if(!document.hidden)load(false)},60000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)load(false)});
+</script>
+</body>
+</html>
