@@ -156,7 +156,7 @@ function brandName(b){return(S.rules.brands||{})[b]||b}
 function personName(id){const p=S.people.find(x=>x.id===id);return p?p.name:(S.rules.ownerName||"Audi")}
 function isOwner(){return S.me&&S.me.role==="owner"}
 function mine(it){return S.me&&it.contributed_by===S.me.id}
-function canAct(it){return isOwner()||mine(it)}
+function canAct(it){return it.source!=="desk"&&(isOwner()||mine(it))} // desk copies: change them on the real desk
 function tabOf(st){return TABS.find(t=>t.of.includes(st))||TABS[0]}
 function stColor(st){return `var(--${st})`}
 function safeUrl(u){return typeof u==="string"&&/^https:\/\//.test(u)?u:null}
@@ -245,7 +245,7 @@ function card(it){
           el("div",{},el("button",{class:"act",type:"button",onclick:e=>doAct(it,"caption",$(`c-${it.id}`).value,e.currentTarget)},"Save caption")),
           el("h3",{text:"Account"}),el("div",{class:"row",style:"overflow:visible"},...Object.entries(S.rules.brands||{}).map(([id,l])=>el("button",{class:"tab",type:"button","aria-pressed":String(it.brand===id),onclick:e=>{if(it.brand!==id)doAct(it,"brand",id,e.currentTarget)}},l)))
         ]:null)):null,
-    acts.length?el("div",{class:"actions"},acts):el("div",{class:"ro",text:it.status==="posted"?"":`Only ${personName(it.contributed_by)}${it.contributed_by&&it.contributed_by!=="owner"?` or ${S.rules.ownerName}`:""} can change this one.`}));
+    acts.length?el("div",{class:"actions"},acts):el("div",{class:"ro",text:it.status==="posted"?"":it.source==="desk"?`On ${S.rules.ownerName}'s desk: ${S.rules.ownerName} approves it there.`:`Only ${personName(it.contributed_by)}${it.contributed_by&&it.contributed_by!=="owner"?` or ${S.rules.ownerName}`:""} can change this one.`}));
 }
 
 async function doAct(it,action,value,btn){
