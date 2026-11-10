@@ -179,7 +179,7 @@ function whereLine(it){
   const r=S.rules,acct=brandName(it.brand),to=PLAT[it.brand]||"Instagram";let when;
   if(["input","ready","changes"].includes(it.status)){
     const typed=(S.when[it.id]||"").trim();
-    when=typed?`your time 「${typed}」`:(isOwner()?"next free slot":`next free slot at least ${r.vetoHours||12} h out`);
+    when=it.source==="desk"?`waiting for ${r.ownerName}'s review`:typed?`your time 「${typed}」`:(isOwner()?"next free slot":`next free slot at least ${r.vetoHours||12} h out`);
   }else if(["approved","scheduled"].includes(it.status)){
     const t=Date.parse(it.post_at||"");
     when=t?ptLabel(t):(it.post_instruction?`「${it.post_instruction}」 · ${r.ownerName}'s poster books it`:`${r.ownerName}'s poster books the next free slot`);
